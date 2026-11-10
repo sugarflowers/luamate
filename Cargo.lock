@@ -221,7 +221,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "luas2"
+name = "luamate"
 version = "0.1.0"
 dependencies = [
  "anyhow",
