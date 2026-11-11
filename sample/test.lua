@@ -4,13 +4,40 @@ function main()
     print(line)
   end
 
+ --[[ 
   f = file.open_file("テスト.txt")
   f:write("hello\n")
   f:write("world\n")
   f:write("こんにちは世界\n")
 
   f:close()
+--]]
 
+
+  if file.exists("Cargo.toml2") then
+    print("toml2 is exists!")
+  else
+    print("toml2 is not exists!")
+    file.makedirs("testdir")
+    print("create testdir!")
+    file.rmdir("testdir")
+    print("remove dir testdir")
+
+    print(file.getcwd())
+    print(file.exepath())
+  end
+
+  if file.isfile("Cargo.toml") then
+    print("Cargo.toml is file!")
+  else
+    print("Cargo.toml is not file!")
+  end
+
+  if file.isfile("target") then
+    print("target is file!")
+  else
+    print("target is not file!")
+  end
 
 end
 

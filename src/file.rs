@@ -14,7 +14,12 @@ use std::{
         BufRead,
         BufReader,
         Write,
-    }};
+    },
+    path::{
+        Path,
+    },
+    env,
+};
 use encoding_rs::SHIFT_JIS;
 
 use anyhow::Result;
@@ -71,6 +76,7 @@ impl UserData for TextWriter {
                 Ok(())
             }
         );
+
     }
 }
 
@@ -186,7 +192,7 @@ pub fn read_text_auto(path: &str) -> anyhow::Result<String> {
 }
 
 
-pub fn register_file(lua: &Lua, utils: &Table) -> mlua::Result<()> {
+pub fn register_file(lua: &Lua, tbl: &Table) -> mlua::Result<()> {
 
     let lines_fn = lua.create_function(|lua, path: String| {
         let reader = Rc::new(
@@ -208,21 +214,62 @@ pub fn register_file(lua: &Lua, utils: &Table) -> mlua::Result<()> {
 
         Ok(iter)
     })?;
-    utils.set("lines", lines_fn)?;
+    tbl.set("lines", lines_fn)?;
 
 
     let create_file_fn = lua.create_function(|_, path: String| {
         TextWriter::create(&path)
             .map_err(mlua::Error::external)
     })?;
-    utils.set("create_file", create_file_fn)?;
+    tbl.set("create_file", create_file_fn)?;
 
 
     let open_file_fn = lua.create_function(|_, path: String| {
         TextWriter::open(&path)
             .map_err(mlua::Error::external)
     })?;
-    utils.set("open_file", open_file_fn)?;
+    tbl.set("open_file", open_file_fn)?;
+
+
+    let exists_fn = lua.create_function(|_, path: String| {
+        Ok(Path::new(&path).exists())
+    })?;
+    tbl.set("exists", exists_fn)?;
+
+    let isfile_fn = lua.create_function(|_, path: String| {
+        Ok(Path::new(&path).is_file())
+    })?;
+    tbl.set("isfile", isfile_fn)?;
+
+    let makedirs_fn = lua.create_function(|_, path: String| {
+        fs::create_dir_all(Path::new(&path))?;
+        Ok(())
+    })?;
+    tbl.set("makedirs", makedirs_fn)?;
+
+    let rmdir_fn = lua.create_function(|_, path: String| {
+        fs::remove_dir_all(Path::new(&path))?;
+        Ok(())
+    })?;
+    tbl.set("rmdir", rmdir_fn)?;
+
+    let remove_fn = lua.create_function(|_, path: String| {
+        fs::remove_file(Path::new(&path))?;
+        Ok(())
+    })?;
+    tbl.set("remove", remove_fn)?;
+
+    let getcwd_fn = lua.create_function(|_, ()| {
+        Ok(env::current_dir()?)
+    })?;
+    tbl.set("getcwd", getcwd_fn)?;
+
+    let exepath_fn = lua.create_function(|_, ()| {
+        let mut p = env::current_exe()?;
+        let _ = p.pop();
+        Ok(p)
+    })?;
+    tbl.set("exepath", exepath_fn)?;
 
     Ok(())
 }
