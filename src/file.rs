@@ -218,17 +218,21 @@ pub fn register_file(lua: &Lua, tbl: &Table) -> mlua::Result<()> {
 
 
     let create_file_fn = lua.create_function(|_, path: String| {
-        TextWriter::create(&path)
-            .map_err(mlua::Error::external)
+        TextWriter::create(&path).map_err(mlua::Error::external)
     })?;
     tbl.set("create_file", create_file_fn)?;
 
 
     let open_file_fn = lua.create_function(|_, path: String| {
-        TextWriter::open(&path)
-            .map_err(mlua::Error::external)
+        TextWriter::open(&path).map_err(mlua::Error::external)
     })?;
     tbl.set("open_file", open_file_fn)?;
+
+
+    let read_fn = lua.create_function(|_, path: String| {
+        Ok(read_text_auto(&path).map_err(mlua::Error::external))
+    })?;
+    tbl.set("read", read_fn)?;
 
 
     let exists_fn = lua.create_function(|_, path: String| {

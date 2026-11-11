@@ -12,7 +12,9 @@ function main()
 
   f:close()
 --]]
-
+  print("\n\n-----")
+  print(file.read("Cargo.toml"))
+  print("-----")
 
   if file.exists("Cargo.toml2") then
     print("toml2 is exists!")
