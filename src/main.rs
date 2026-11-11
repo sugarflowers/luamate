@@ -1,7 +1,8 @@
 mod file;
+mod json;
 
-use mlua::{Lua, Variadic};
 use clap::Parser;
+use mlua::{Lua, Variadic};
 //use anyhow::Result;
 
 #[derive(Parser)]
@@ -10,14 +11,9 @@ struct Args {
     script: String,
 }
 
-
 fn main() -> mlua::Result<()> {
     let args = Args::parse();
     let lua = Lua::new();
-
-    let utils = lua.create_table()?;
-    let file = lua.create_table()?;
-
 
     let print_fn = lua.create_function(|_, args: Variadic<String>| {
         for arg in args {
@@ -25,19 +21,21 @@ fn main() -> mlua::Result<()> {
         }
         Ok(())
     })?;
+
     lua.globals().set("print", print_fn)?;
-
-
+    let utils = lua.create_table()?;
+    let file = lua.create_table()?;
+    let json = lua.create_table()?;
 
     file::register_file(&lua, &file)?;
+    json::register_json(&lua, &json)?;
 
     lua.globals().set("utils", utils)?;
     lua.globals().set("file", file)?;
-
+    lua.globals().set("json", json)?;
 
     let script = file::read_text_auto(&args.script).map_err(mlua::Error::external)?;
     lua.load(&script).exec()?;
-
 
     Ok(())
 }

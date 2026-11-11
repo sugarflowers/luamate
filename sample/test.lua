@@ -12,6 +12,8 @@ function main()
 
   f:close()
 --]]
+--
+--[[
   print("\n\n-----")
   print(file.read("Cargo.toml"))
   print("-----")
@@ -40,8 +42,29 @@ function main()
   else
     print("target is not file!")
   end
-
+--]]
 end
+
+
+
+print(type(json))
 
 main()
 
+--t = '{"name"="LuaMate","version"=1,"ar"=[9,10,11]}'
+t = '{"name":"LuaMate","version":1,"ar":[9,10,11],"b":false}'
+--text = json.encode(j)
+
+--print(text)
+data = json.decode(t)
+print(data.name)
+print(data.version)
+print(#data.ar)
+if data.b == true then
+  print("true")
+else
+  print("false")
+end
+
+j = json.encode(data)
+print(j)

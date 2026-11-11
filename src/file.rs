@@ -1,29 +1,15 @@
+use encoding_rs::SHIFT_JIS;
 use mlua::{Lua, Table, UserData, UserDataMethods};
 use std::{
-    rc::Rc,
     cell::RefCell,
-    fs, 
-    fs::{
-        File,
-        OpenOptions,
-    },
-    io::{
-        Seek, 
-        SeekFrom, 
-        Read,
-        BufRead,
-        BufReader,
-        Write,
-    },
-    path::{
-        Path,
-    },
-    env,
+    env, fs,
+    fs::{File, OpenOptions},
+    io::{BufRead, BufReader, Read, Seek, SeekFrom, Write},
+    path::Path,
+    rc::Rc,
 };
-use encoding_rs::SHIFT_JIS;
 
 use anyhow::Result;
-
 
 #[derive(Debug, Clone, Copy)]
 enum TextEncoding {
@@ -38,48 +24,43 @@ struct TextWriter {
 impl TextWriter {
     fn create(path: &str) -> anyhow::Result<Self> {
         Ok(Self {
-            file: File::create(path)?
+            file: File::create(path)?,
         })
     }
     fn open(path: &str) -> anyhow::Result<Self> {
         Ok(Self {
-            file: OpenOptions::new()
-                .create(true)
-                .append(true)
-                .open(path)?
+            file: OpenOptions::new().create(true).append(true).open(path)?,
         })
     }
 }
 
-
-
 impl UserData for TextWriter {
     fn add_methods<M: UserDataMethods<Self>>(methods: &mut M) {
-
         methods.add_method_mut("write", |_, this, text: String| {
-                let (encoded, _, _) = SHIFT_JIS.encode(&text);
-                this.file.write_all(&encoded).map_err(mlua::Error::external)?;
-                Ok(())
-            }
-        );
+            let (encoded, _, _) = SHIFT_JIS.encode(&text);
+            this.file
+                .write_all(&encoded)
+                .map_err(mlua::Error::external)?;
+            Ok(())
+        });
 
         methods.add_method_mut("writeln", |_, this, text: String| {
-                let (encoded, _, _) = SHIFT_JIS.encode(&text);
-                this.file.write_all(&encoded).map_err(mlua::Error::external)?;
-                this.file.write_all(b"\r\n").map_err(mlua::Error::external)?;
-                Ok(())
-            }
-        );
+            let (encoded, _, _) = SHIFT_JIS.encode(&text);
+            this.file
+                .write_all(&encoded)
+                .map_err(mlua::Error::external)?;
+            this.file
+                .write_all(b"\r\n")
+                .map_err(mlua::Error::external)?;
+            Ok(())
+        });
 
         methods.add_method_mut("close", |_, this, ()| {
-                this.file.flush().map_err(mlua::Error::external)?;
-                Ok(())
-            }
-        );
-
+            this.file.flush().map_err(mlua::Error::external)?;
+            Ok(())
+        });
     }
 }
-
 
 struct LineReader {
     reader: BufReader<File>,
@@ -92,9 +73,7 @@ impl LineReader {
         let encoding = detect_encoding(&mut file)?;
         match encoding {
             TextEncoding::Utf8Bom => {
-                file.seek(
-                    SeekFrom::Start(3)
-                )?;
+                file.seek(SeekFrom::Start(3))?;
             }
             _ => {}
         }
@@ -105,51 +84,34 @@ impl LineReader {
     }
 }
 impl LineReader {
-
     fn next_line(&mut self) -> anyhow::Result<Option<String>> {
-
         let mut buf = Vec::new();
 
-        let size =
-            self.reader.read_until(
-                b'\n',
-                &mut buf
-            )?;
+        let size = self.reader.read_until(b'\n', &mut buf)?;
 
         if size == 0 {
             return Ok(None);
         }
 
         let text = match self.encoding {
+            TextEncoding::Utf8 => String::from_utf8_lossy(&buf).into_owned(),
 
-            TextEncoding::Utf8 => {
-                String::from_utf8_lossy(&buf)
-                    .into_owned()
-            }
-
-            TextEncoding::Utf8Bom => {
-                String::from_utf8_lossy(&buf)
-                    .into_owned()
-            }
+            TextEncoding::Utf8Bom => String::from_utf8_lossy(&buf).into_owned(),
 
             TextEncoding::ShiftJis => {
-
-                let (s, _, _) =
-                    SHIFT_JIS.decode(&buf);
+                let (s, _, _) = SHIFT_JIS.decode(&buf);
 
                 s.into_owned()
             }
         };
 
         Ok(Some(
-            text
-                .trim_end_matches('\n')
+            text.trim_end_matches('\n')
                 .trim_end_matches('\r')
-                .to_string()
+                .to_string(),
         ))
     }
 }
-
 
 fn detect_encoding(file: &mut std::fs::File) -> anyhow::Result<TextEncoding> {
     let mut buf = [0u8; 4096];
@@ -165,20 +127,12 @@ fn detect_encoding(file: &mut std::fs::File) -> anyhow::Result<TextEncoding> {
     Ok(TextEncoding::ShiftJis)
 }
 
-
 fn decode_text(bytes: &[u8], encoding: TextEncoding) -> String {
     match encoding {
-        TextEncoding::Utf8 => {
-            String::from_utf8_lossy(bytes)
-                .into_owned()
-        }
-        TextEncoding::Utf8Bom => {
-            String::from_utf8_lossy(&bytes[3..])
-                .into_owned()
-        }
+        TextEncoding::Utf8 => String::from_utf8_lossy(bytes).into_owned(),
+        TextEncoding::Utf8Bom => String::from_utf8_lossy(&bytes[3..]).into_owned(),
         TextEncoding::ShiftJis => {
-            let (text, _, _) =
-                SHIFT_JIS.decode(bytes);
+            let (text, _, _) = SHIFT_JIS.decode(bytes);
             text.into_owned()
         }
     }
@@ -187,62 +141,47 @@ fn decode_text(bytes: &[u8], encoding: TextEncoding) -> String {
 pub fn read_text_auto(path: &str) -> anyhow::Result<String> {
     let mut file = std::fs::File::open(path)?;
     let enc = detect_encoding(&mut file)?;
-    let bytes = fs::read(path)?; 
+    let bytes = fs::read(path)?;
     Ok(decode_text(&bytes, enc))
 }
 
-
 pub fn register_file(lua: &Lua, tbl: &Table) -> mlua::Result<()> {
-
     let lines_fn = lua.create_function(|lua, path: String| {
-        let reader = Rc::new(
-            RefCell::new(
-                LineReader::open(&path)
-                    .map_err(mlua::Error::external)?
-            )
-        );
+        let reader = Rc::new(RefCell::new(
+            LineReader::open(&path).map_err(mlua::Error::external)?,
+        ));
 
         let iter_reader = reader.clone();
 
         let iter = lua.create_function_mut(move |_, ()| {
             let mut reader = iter_reader.borrow_mut();
 
-            reader
-                .next_line()
-                .map_err(mlua::Error::external)
+            reader.next_line().map_err(mlua::Error::external)
         })?;
 
         Ok(iter)
     })?;
     tbl.set("lines", lines_fn)?;
 
-
     let create_file_fn = lua.create_function(|_, path: String| {
         TextWriter::create(&path).map_err(mlua::Error::external)
     })?;
     tbl.set("create_file", create_file_fn)?;
-
 
     let open_file_fn = lua.create_function(|_, path: String| {
         TextWriter::open(&path).map_err(mlua::Error::external)
     })?;
     tbl.set("open_file", open_file_fn)?;
 
-
     let read_fn = lua.create_function(|_, path: String| {
         Ok(read_text_auto(&path).map_err(mlua::Error::external))
     })?;
     tbl.set("read", read_fn)?;
 
-
-    let exists_fn = lua.create_function(|_, path: String| {
-        Ok(Path::new(&path).exists())
-    })?;
+    let exists_fn = lua.create_function(|_, path: String| Ok(Path::new(&path).exists()))?;
     tbl.set("exists", exists_fn)?;
 
-    let isfile_fn = lua.create_function(|_, path: String| {
-        Ok(Path::new(&path).is_file())
-    })?;
+    let isfile_fn = lua.create_function(|_, path: String| Ok(Path::new(&path).is_file()))?;
     tbl.set("isfile", isfile_fn)?;
 
     let makedirs_fn = lua.create_function(|_, path: String| {
@@ -263,9 +202,7 @@ pub fn register_file(lua: &Lua, tbl: &Table) -> mlua::Result<()> {
     })?;
     tbl.set("remove", remove_fn)?;
 
-    let getcwd_fn = lua.create_function(|_, ()| {
-        Ok(env::current_dir()?)
-    })?;
+    let getcwd_fn = lua.create_function(|_, ()| Ok(env::current_dir()?))?;
     tbl.set("getcwd", getcwd_fn)?;
 
     let exepath_fn = lua.create_function(|_, ()| {
