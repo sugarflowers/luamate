@@ -1,4 +1,6 @@
+use anyhow::Result;
 use encoding_rs::SHIFT_JIS;
+use glob::glob;
 use mlua::{Lua, Table, UserData, UserDataMethods};
 use std::{
     cell::RefCell,
@@ -8,8 +10,6 @@ use std::{
     path::Path,
     rc::Rc,
 };
-
-use anyhow::Result;
 
 #[derive(Debug, Clone, Copy)]
 enum TextEncoding {
@@ -21,6 +21,7 @@ enum TextEncoding {
 struct TextWriter {
     file: File,
 }
+
 impl TextWriter {
     fn create(path: &str) -> anyhow::Result<Self> {
         Ok(Self {
@@ -211,6 +212,27 @@ pub fn register_file(lua: &Lua, tbl: &Table) -> mlua::Result<()> {
         Ok(p)
     })?;
     tbl.set("exepath", exepath_fn)?;
+
+    let glob_fn = lua.create_function(|lua, pattern: String| {
+        let mut paths = glob(&pattern).map_err(mlua::Error::external)?;
+        let iter = lua.create_function_mut(move |_, ()| {
+            loop {
+                match paths.next() {
+                    Some(Ok(path)) => {
+                        return Ok(Some(path.to_string_lossy().to_string()));
+                    }
+                    Some(Err(_)) => {
+                        continue;
+                    }
+                    None => {
+                        return Ok(None::<String>);
+                    }
+                }
+            }
+        })?;
+        Ok(iter)
+    })?;
+    tbl.set("glob", glob_fn)?;
 
     Ok(())
 }

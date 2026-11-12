@@ -4,8 +4,6 @@ function main()
     print(line)
   end
 
-
-
 --[[ 
   f = file.open_file("テスト.txt")
   f:write("hello\n")
@@ -14,9 +12,6 @@ function main()
 
   f:close()
 --]]
-
-
-
 
 --[[
   print("\n\n-----")
@@ -50,29 +45,31 @@ function main()
 --]]
 end
 
-
-
-print(type(json))
-
-main()
-
---t = '{"name"="LuaMate","version"=1,"ar"=[9,10,11]}'
-t = '{"name":"LuaMate","version":1,"ar":[9,10,11],"b":false}'
---text = json.encode(j)
-
---print(text)
-data = json.decode(t)
-print(data.name)
-print(data.version)
-print(#data.ar)
-if data.b == true then
-  print("true")
-else
-  print("false")
+p = "C:/Users/Houjin/Documents/作業/**/*.rs"
+p = "//sbf03019-w10/共有/設定完了/log/**/*.txt"
+for path in file.glob(p) do
+  print(path)
 end
 
-j = json.encode(data)
-print(j)
+
+--main()
+
+--t = '{"name":"LuaMate","version":1,"ar":[9,10,11],"b":false}'
+--text = json.encode(j)
+--print(text)
+--
+-- data = json.decode(t)
+-- print(data.name)
+-- print(data.version)
+-- print(#data.ar)
+-- if data.b == true then
+--   print("true")
+-- else
+--   print("false")
+-- end
+
+-- j = json.encode(data)
+-- print(j)
 
 --prent(a)
 
