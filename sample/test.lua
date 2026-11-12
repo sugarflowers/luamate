@@ -49,7 +49,9 @@ print(file.getcwd())
 
 p = [[.\**\*.rs]]
 for path in file.glob(p) do
-  print(path)
+  print(file.dirname(path))
+  print(file.basename(path))
+  print("")
 end
 
 

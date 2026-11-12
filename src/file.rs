@@ -203,6 +203,18 @@ pub fn register_file(lua: &Lua, tbl: &Table) -> mlua::Result<()> {
     })?;
     tbl.set("remove", remove_fn)?;
 
+    let copy_fn = lua.create_function(|_, (src, dst): (String, String)| {
+        fs::copy(&src, &dst).map_err(mlua::Error::external)?;
+        Ok(())
+    })?;
+    tbl.set("copy", copy_fn)?;
+
+    let move_fn = lua.create_function(|_, (src, dst): (String, String)| {
+        fs::rename(&src, &dst).map_err(mlua::Error::external)?;
+        Ok(())
+    })?;
+    tbl.set("move", move_fn)?;
+
     let getcwd_fn = lua.create_function(|_, ()| {
         let path = env::current_dir()?;
         Ok(path.to_string_lossy().replace("\\", "/"))
@@ -237,6 +249,28 @@ pub fn register_file(lua: &Lua, tbl: &Table) -> mlua::Result<()> {
         Ok(iter)
     })?;
     tbl.set("glob", glob_fn)?;
+
+    let basename_fn = lua.create_function(|_, path: String| {
+        let name = std::path::Path::new(&path)
+            .file_name()
+            .and_then(|s| s.to_str())
+            .unwrap_or("")
+            .to_string();
+        Ok(name)
+    })?;
+    tbl.set("basename", basename_fn)?;
+
+    let dirname_fn = lua.create_function(|_, path: String| {
+        let dir = std::path::Path::new(&path)
+            .parent()
+            .map(|p| {
+                p.to_string_lossy().replace("\\", "/")
+            })
+        .unwrap_or_default();
+        Ok(dir)
+    })?;
+    tbl.set("dirname", dirname_fn)?;
+
 
     Ok(())
 }
