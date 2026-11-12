@@ -45,8 +45,7 @@ function main()
 --]]
 end
 
-p = "C:/Users/Houjin/Documents/作業/**/*.rs"
-p = "//sbf03019-w10/共有/設定完了/log/**/*.txt"
+p = [[.\**\*.rs]]
 for path in file.glob(p) do
   print(path)
 end
