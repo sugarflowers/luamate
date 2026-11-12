@@ -4,7 +4,9 @@ function main()
     print(line)
   end
 
- --[[ 
+
+
+--[[ 
   f = file.open_file("テスト.txt")
   f:write("hello\n")
   f:write("world\n")
@@ -12,7 +14,10 @@ function main()
 
   f:close()
 --]]
---
+
+
+
+
 --[[
   print("\n\n-----")
   print(file.read("Cargo.toml"))
@@ -69,5 +74,5 @@ end
 j = json.encode(data)
 print(j)
 
-prent(a)
+--prent(a)
 

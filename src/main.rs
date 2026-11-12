@@ -37,14 +37,13 @@ fn main() -> mlua::Result<()> {
     })?;
 
     lua.globals().set("print", print_fn)?;
-    let utils = lua.create_table()?;
+
     let file = lua.create_table()?;
     let json = lua.create_table()?;
 
     file::register_file(&lua, &file)?;
     json::register_json(&lua, &json)?;
 
-    lua.globals().set("utils", utils)?;
     lua.globals().set("file", file)?;
     lua.globals().set("json", json)?;
 
