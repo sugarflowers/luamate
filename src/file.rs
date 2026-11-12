@@ -203,13 +203,16 @@ pub fn register_file(lua: &Lua, tbl: &Table) -> mlua::Result<()> {
     })?;
     tbl.set("remove", remove_fn)?;
 
-    let getcwd_fn = lua.create_function(|_, ()| Ok(env::current_dir()?))?;
+    let getcwd_fn = lua.create_function(|_, ()| {
+        let path = env::current_dir()?;
+        Ok(path.to_string_lossy().replace("\\", "/"))
+    })?;
     tbl.set("getcwd", getcwd_fn)?;
 
     let exepath_fn = lua.create_function(|_, ()| {
-        let mut p = env::current_exe()?;
-        let _ = p.pop();
-        Ok(p)
+        let mut path = env::current_exe()?;
+        let _ = path.pop();
+        Ok(path.to_string_lossy().replace("\\", "/"))
     })?;
     tbl.set("exepath", exepath_fn)?;
 
@@ -219,7 +222,8 @@ pub fn register_file(lua: &Lua, tbl: &Table) -> mlua::Result<()> {
             loop {
                 match paths.next() {
                     Some(Ok(path)) => {
-                        return Ok(Some(path.to_string_lossy().to_string()));
+                        return Ok(Some(path.to_string_lossy().replace("\\", "/")));
+                        //return Ok(Some(path.to_string_lossy().to_string()));
                     }
                     Some(Err(_)) => {
                         continue;

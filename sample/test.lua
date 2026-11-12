@@ -45,6 +45,8 @@ function main()
 --]]
 end
 
+print(file.getcwd())
+
 p = [[.\**\*.rs]]
 for path in file.glob(p) do
   print(path)
