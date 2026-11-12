@@ -11,6 +11,20 @@ struct Args {
     script: String,
 }
 
+fn print_lua_error(err: mlua::Error) {
+    match err {
+        mlua::Error::CallbackError { traceback, cause } => {
+            println!("Error: {}", cause);
+
+            println!("{}", traceback);
+        }
+
+        _ => {
+            println!("{}", err);
+        }
+    }
+}
+
 fn main() -> mlua::Result<()> {
     let args = Args::parse();
     let lua = Lua::new();
@@ -35,7 +49,9 @@ fn main() -> mlua::Result<()> {
     lua.globals().set("json", json)?;
 
     let script = file::read_text_auto(&args.script).map_err(mlua::Error::external)?;
-    lua.load(&script).exec()?;
+    if let Err(e) = lua.load(&script).set_name(&args.script).exec() {
+        print_lua_error(e);
+    }
 
     Ok(())
 }

@@ -68,3 +68,6 @@ end
 
 j = json.encode(data)
 print(j)
+
+prent(a)
+
