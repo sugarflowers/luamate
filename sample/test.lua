@@ -45,15 +45,16 @@ function main()
 --]]
 end
 
-print(file.getcwd())
 
-p = [[.\**\*.rs]]
-for path in file.glob(p) do
-  print(file.dirname(path))
-  print(file.basename(path))
-  print("")
-end
+-- print(file.getcwd())
 
+-- p = [[.\**\*.rs]]
+-- for path in file.glob(p) do
+--   print(file.dirname(path))
+--   print(file.basename(path))
+--   print("")
+-- end
+--]]
 
 --main()
 
@@ -76,3 +77,28 @@ end
 
 --prent(a)
 
+help = function(name) 
+    local e
+    if name == "" or name == nil then
+        e = _ENV
+    else
+        e = _ENV[name]
+    end
+
+    if name ~= nil then
+        print(string.format("\n\n\"%s\" is %s", name, type(e)))
+    end
+
+    print("--------------------")
+
+    if type(e) == "table" then
+        for i in pairs(e) do
+            print(i .. " ... " .. type(e[i]))
+        end
+    end
+
+    print()
+end
+
+
+help("")
