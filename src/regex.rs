@@ -1,4 +1,4 @@
-use mlua::{Lua, Table, UserData, UserDataMethods};
+use mlua::{Lua, Table};
 use regex::Regex;
 
 pub fn register_regex(lua: &Lua, tbl: &Table) -> mlua::Result<()> {
@@ -10,9 +10,7 @@ pub fn register_regex(lua: &Lua, tbl: &Table) -> mlua::Result<()> {
 
     let match_fn = lua.create_function(|lua, (pattern, text): (String, String)| {
         let re = regex::Regex::new(&pattern).map_err(mlua::Error::external)?;
-
         let mut results = mlua::MultiValue::new();
-
         if let Some(caps) = re.captures(&text) {
             for i in 1..caps.len() {
                 let value = caps.get(i).map(|m| m.as_str()).unwrap_or("");
@@ -20,10 +18,8 @@ pub fn register_regex(lua: &Lua, tbl: &Table) -> mlua::Result<()> {
                 results.push_back(lua.pack(value.to_string())?);
             }
         }
-
         Ok(results)
     })?;
-
     tbl.set("match", match_fn)?;
 
     Ok(())
