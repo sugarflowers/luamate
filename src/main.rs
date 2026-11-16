@@ -1,6 +1,7 @@
 mod file;
 mod json;
 mod regex;
+mod text;
 
 use clap::Parser;
 use mlua::{Lua, Variadic};
@@ -37,19 +38,30 @@ fn main() -> mlua::Result<()> {
         Ok(())
     })?;
 
+    let input_fn = lua.create_function(|_, ()| {
+        let mut s = String::new();
+        std::io::stdin().read_line(&mut s).map_err(mlua::Error::external)?;
+        Ok(s.trim_end().to_string())
+    })?;
+
+
     lua.globals().set("print", print_fn)?;
+    lua.globals().set("input", input_fn)?;
 
     let file = lua.create_table()?;
     let json = lua.create_table()?;
     let regex = lua.create_table()?;
+    let text = lua.create_table()?;
 
     file::register_file(&lua, &file)?;
     json::register_json(&lua, &json)?;
     regex::register_regex(&lua, &regex)?;
+    text::register_text(&lua, &text)?;
 
     lua.globals().set("file", file)?;
     lua.globals().set("json", json)?;
     lua.globals().set("regex", regex)?;
+    lua.globals().set("text", text)?;
 
     let script = file::read_text_auto(&args.script).map_err(mlua::Error::external)?;
     if let Err(e) = lua.load(&script).set_name(&args.script).exec() {

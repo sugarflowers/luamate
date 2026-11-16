@@ -78,6 +78,16 @@ end
 --prent(a)
 --
 
+--[[
 a, b = regex.match("([a-z]+)([0-9]+)", "abc124")
 print(a)
 print(b)
+--]]
+--
+--
+
+a = "  abc "
+print(a)
+print(text.trim(a))
+print("please enter")
+b = input()
