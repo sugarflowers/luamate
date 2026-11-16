@@ -1,5 +1,6 @@
 mod file;
 mod json;
+mod regex;
 
 use clap::Parser;
 use mlua::{Lua, Variadic};
@@ -40,12 +41,15 @@ fn main() -> mlua::Result<()> {
 
     let file = lua.create_table()?;
     let json = lua.create_table()?;
+    let regex = lua.create_table()?;
 
     file::register_file(&lua, &file)?;
     json::register_json(&lua, &json)?;
+    regex::register_regex(&lua, &regex)?;
 
     lua.globals().set("file", file)?;
     lua.globals().set("json", json)?;
+    lua.globals().set("regex", regex)?;
 
     let script = file::read_text_auto(&args.script).map_err(mlua::Error::external)?;
     if let Err(e) = lua.load(&script).set_name(&args.script).exec() {

@@ -263,14 +263,11 @@ pub fn register_file(lua: &Lua, tbl: &Table) -> mlua::Result<()> {
     let dirname_fn = lua.create_function(|_, path: String| {
         let dir = std::path::Path::new(&path)
             .parent()
-            .map(|p| {
-                p.to_string_lossy().replace("\\", "/")
-            })
-        .unwrap_or_default();
+            .map(|p| p.to_string_lossy().replace("\\", "/"))
+            .unwrap_or_default();
         Ok(dir)
     })?;
     tbl.set("dirname", dirname_fn)?;
-
 
     Ok(())
 }
