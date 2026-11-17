@@ -138,5 +138,8 @@ print(a)
 print(text.trim(a))
 print("please enter")
 b = input()
+clipboard.set(b)
+c = clipboard.get()
+print(c)
 
 
