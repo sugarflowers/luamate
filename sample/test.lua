@@ -1,3 +1,46 @@
+function dprt(v)
+	local function dbg(v)
+		local buf, t, i = "", type(v), 0
+		if t == "table" then
+			buf = "table{"
+			for i in pairs(v) do
+				if v[i] ~= nil then
+					buf = string.format("%s \n\t%s: %s", buf, i,dbg(v[i]))
+				end
+			end
+			buf = string.format("%s \n},", buf)
+		elseif t == "userdata" then
+			buf = "userdata{"
+			for i=0,#v-1 do
+				buf = string.format("%s %s: %s", buf, i, dbg(v[i]))
+			end
+			buf = string.format("%s \n},", buf)
+		elseif t == "number" then
+			buf = string.format("%s,", v)
+		elseif t == "string" then
+			buf = string.format("'%s',", v)
+		elseif t == "boolean" then
+			if v then
+				buf = "true,"
+			else
+				buf = "false,"
+			end
+		elseif t == "function" then
+			buf = "function{"
+			local info = debug.getinfo(v)
+			for i in pairs(info) do
+				buf = string.format("%s, %s: %s", buf, i, info[i])
+			end
+			buf = string.format("%s },", buf)
+		elseif t == "nil" then
+			buf = "nil,"
+		end 
+		return buf
+	end
+	print(dbg(v))
+end
+
+
 function main() 
   print("Hello, mlua!")
   for line in file.lines("Cargo.toml") do
@@ -85,9 +128,15 @@ print(b)
 --]]
 --
 --
+--dprt(terminal)
 
+h = terminal.color("Hello, luamate!", "blue", nil, {"bold","italic","blink"})
+print(h)
+--
 a = "  abc "
 print(a)
 print(text.trim(a))
 print("please enter")
 b = input()
+
+
