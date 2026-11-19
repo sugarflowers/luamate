@@ -143,9 +143,9 @@ b = input()
 clipboard.set(b)
 c = clipboard.get()
 print(c)
-dialog.msgbox("msg", "Hello, world!" )
 --]]
-r = dialog.yes_no("do?", "working?")
+dialog.msgbox("msg", "Hello, world!" )
+r = dialog.yes_no("確認", "よろしいですか?")
 if r then
   print("true")
 else
