@@ -133,6 +133,8 @@ print(b)
 h = terminal.color("Hello, luamate!", "blue", nil, {"bold","italic","blink"})
 print(h)
 --
+
+--[[
 a = "  abc "
 print(a)
 print(text.trim(a))
@@ -141,5 +143,12 @@ b = input()
 clipboard.set(b)
 c = clipboard.get()
 print(c)
-
+dialog.msgbox("msg", "Hello, world!" )
+--]]
+r = dialog.yes_no("do?", "working?")
+if r then
+  print("true")
+else
+  print("false")
+end
 
