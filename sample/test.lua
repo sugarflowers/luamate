@@ -133,8 +133,9 @@ print(b)
 h = terminal.color("Hello, luamate!", "blue", nil, {"bold","italic","blink"})
 print(h)
 --
-
+print("play")
 audio.play("c:/work/res/ok2.wav")
+print("playend")
 a = input()
 
 --[[
