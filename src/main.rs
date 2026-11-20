@@ -5,6 +5,7 @@ mod json;
 mod regex;
 mod terminal;
 mod text;
+mod audio;
 
 use clap::Parser;
 use mlua::{Lua, Variadic};
@@ -66,6 +67,7 @@ fn main() -> mlua::Result<()> {
     let terminal = lua.create_table()?;
     let clipboard = lua.create_table()?;
     let dialog = lua.create_table()?;
+    let audio = lua.create_table()?;
 
     file::register_file(&lua, &file)?;
     json::register_json(&lua, &json)?;
@@ -74,6 +76,7 @@ fn main() -> mlua::Result<()> {
     terminal::register_terminal(&lua, &terminal)?;
     clipboard::register_clipboard(&lua, &clipboard)?;
     dialog::register_dialog(&lua, &dialog)?;
+    audio::register_audio(&lua, &audio)?;
 
     lua.globals().set("file", file)?;
     lua.globals().set("json", json)?;
@@ -82,6 +85,7 @@ fn main() -> mlua::Result<()> {
     lua.globals().set("terminal", terminal)?;
     lua.globals().set("clipboard", clipboard)?;
     lua.globals().set("dialog", dialog)?;
+    lua.globals().set("audio", audio)?;
 
     let script = file::read_text_auto(&args.script).map_err(mlua::Error::external)?;
     if let Err(e) = lua.load(&script).set_name(&args.script).exec() {

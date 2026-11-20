@@ -133,6 +133,9 @@ print(b)
 h = terminal.color("Hello, luamate!", "blue", nil, {"bold","italic","blink"})
 print(h)
 --
+a = input()
+
+audio.play_wait("sample/ok2.wav")
 
 --[[
 a = "  abc "
@@ -144,6 +147,9 @@ clipboard.set(b)
 c = clipboard.get()
 print(c)
 --]]
+--
+--
+--[[
 dialog.msgbox("test")
 dialog.msgbox("msg", "Hello, world!" )
 r = dialog.yes_no("確認", "よろしいですか?")
@@ -160,4 +166,4 @@ if f then
     print(v)
   end
 end
-
+--]]
