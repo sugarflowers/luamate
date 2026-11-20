@@ -133,9 +133,9 @@ print(b)
 h = terminal.color("Hello, luamate!", "blue", nil, {"bold","italic","blink"})
 print(h)
 --
-a = input()
 
-audio.play_wait("sample/ok2.wav")
+audio.play("c:/work/res/ok2.wav")
+a = input()
 
 --[[
 a = "  abc "
