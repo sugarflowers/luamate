@@ -168,7 +168,7 @@ pub fn register_dialog(lua: &Lua, tbl: &Table) -> mlua::Result<()> {
 
     let select_dir_fn = lua.create_function(
         |_, (title, dir): (Option<String>, Option<String>)| {
-            let path = disp_dir_dialog(title, None).map_err(mlua::Error::external)?;
+            let path = disp_dir_dialog(title, dir).map_err(mlua::Error::external)?;
             Ok(path)
         },
     )?;
@@ -176,7 +176,7 @@ pub fn register_dialog(lua: &Lua, tbl: &Table) -> mlua::Result<()> {
 
     let select_dirs_fn = lua.create_function(
         |_, (title, dir): (Option<String>, Option<String>)| {
-            let path = disp_dirs_dialog(title, None).map_err(mlua::Error::external)?;
+            let path = disp_dirs_dialog(title, dir).map_err(mlua::Error::external)?;
             Ok(path)
         },
     )?;
