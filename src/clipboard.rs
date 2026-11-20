@@ -1,8 +1,7 @@
-use mlua::{Lua, Table};
 use arboard::Clipboard;
+use mlua::{Lua, Table};
 
-pub fn register_clipboard(lua: &Lua, tbl: & Table) -> mlua::Result<()> {
-
+pub fn register_clipboard(lua: &Lua, tbl: &Table) -> mlua::Result<()> {
     let get_fn = lua.create_function(|_, (): ()| {
         let mut clipboard = Clipboard::new().map_err(mlua::Error::external)?;
         Ok(clipboard.get_text().map_err(mlua::Error::external)?)

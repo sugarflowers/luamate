@@ -144,11 +144,20 @@ clipboard.set(b)
 c = clipboard.get()
 print(c)
 --]]
+dialog.msgbox("test")
 dialog.msgbox("msg", "Hello, world!" )
 r = dialog.yes_no("確認", "よろしいですか?")
 if r then
   print("true")
 else
   print("false")
+end
+
+f = dialog.select_dirs("select directories")
+
+if f then
+  for i, v in pairs(f) do
+    print(v)
+  end
 end
 

@@ -1,4 +1,4 @@
-use colored::{Color, Colorize, Style, Styles, control, ColoredString};
+use colored::{Color, ColoredString, Colorize, Style, Styles, control};
 use mlua::{Lua, Table};
 
 fn parse_color(name: &str) -> Color {

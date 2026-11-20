@@ -1,10 +1,10 @@
+mod clipboard;
+mod dialog;
 mod file;
 mod json;
 mod regex;
 mod terminal;
 mod text;
-mod clipboard;
-mod dialog;
 
 use clap::Parser;
 use mlua::{Lua, Variadic};
