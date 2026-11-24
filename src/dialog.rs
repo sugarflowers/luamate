@@ -98,23 +98,14 @@ fn disp_save_dialog(
         .map(|p| p.to_string_lossy().replace("\\", "/")))
 }
 
-
-
-fn disp_dir_dialog(
-    title: Option<String>,
-    dir: Option<String>,
-) -> Result<Option<String>> {
+fn disp_dir_dialog(title: Option<String>, dir: Option<String>) -> Result<Option<String>> {
     let dialog = create_file_dialog(title, None, dir);
     Ok(dialog?
         .pick_folder()
         .map(|p| p.to_string_lossy().replace("\\", "/")))
 }
 
-
-fn disp_dirs_dialog(
-    title: Option<String>,
-    dir: Option<String>,
-) -> Result<Option<Vec<String>>> {
+fn disp_dirs_dialog(title: Option<String>, dir: Option<String>) -> Result<Option<Vec<String>>> {
     let dialog = create_file_dialog(title, None, dir);
     Ok(dialog?.pick_folders().map(|paths| {
         paths
@@ -123,7 +114,6 @@ fn disp_dirs_dialog(
             .collect::<Vec<String>>()
     }))
 }
-
 
 pub fn register_dialog(lua: &Lua, tbl: &Table) -> mlua::Result<()> {
     let msgbox_fn = lua.create_function(
@@ -159,27 +149,32 @@ pub fn register_dialog(lua: &Lua, tbl: &Table) -> mlua::Result<()> {
     tbl.set("select_files", select_files_fn)?;
 
     let select_save_fn = lua.create_function(
-        |_, (filename, title, filters, dir): (Option<String>, Option<String>, Option<Table>, Option<String>)| {
-            let path = disp_save_dialog(filename, title, filters, dir).map_err(mlua::Error::external)?;
+        |_,
+         (filename, title, filters, dir): (
+            Option<String>,
+            Option<String>,
+            Option<Table>,
+            Option<String>,
+        )| {
+            let path =
+                disp_save_dialog(filename, title, filters, dir).map_err(mlua::Error::external)?;
             Ok(path)
         },
     )?;
     tbl.set("select_save", select_save_fn)?;
 
-    let select_dir_fn = lua.create_function(
-        |_, (title, dir): (Option<String>, Option<String>)| {
+    let select_dir_fn =
+        lua.create_function(|_, (title, dir): (Option<String>, Option<String>)| {
             let path = disp_dir_dialog(title, dir).map_err(mlua::Error::external)?;
             Ok(path)
-        },
-    )?;
+        })?;
     tbl.set("select_dir", select_dir_fn)?;
 
-    let select_dirs_fn = lua.create_function(
-        |_, (title, dir): (Option<String>, Option<String>)| {
+    let select_dirs_fn =
+        lua.create_function(|_, (title, dir): (Option<String>, Option<String>)| {
             let path = disp_dirs_dialog(title, dir).map_err(mlua::Error::external)?;
             Ok(path)
-        },
-    )?;
+        })?;
     tbl.set("select_dirs", select_dirs_fn)?;
 
     Ok(())

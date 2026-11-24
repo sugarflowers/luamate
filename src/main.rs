@@ -1,3 +1,4 @@
+mod audio;
 mod clipboard;
 mod dialog;
 mod file;
@@ -5,7 +6,6 @@ mod json;
 mod regex;
 mod terminal;
 mod text;
-mod audio;
 
 use clap::Parser;
 use mlua::{Lua, Variadic};

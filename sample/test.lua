@@ -138,6 +138,7 @@ audio.play("c:/work/res/ok2.wav")
 print("playend")
 a = input()
 
+audio.play_wait("c:/work/res/ok2.wav")
 --[[
 a = "  abc "
 print(a)

@@ -1,72 +1,29 @@
 use mlua::{Lua, Table};
-//use rodio::{Decoder, Source, Player};
 use rodio::Player;
-//use std::io::BufReader;
+use std::io::BufReader;
 
+fn play_async(file_path: String) {
+    std::thread::spawn(move || {
+        let mut stream_handle = rodio::DeviceSinkBuilder::open_default_sink().unwrap();
 
-//use std::thread;
-//use std::time::Duration;
-
-/*
-struct AudioPlayer {
-    player: Player,
-    file: std::fs::File,
+        stream_handle.log_on_drop(false);
+        let mixer = stream_handle.mixer();
+        let file = std::fs::File::open(&file_path).unwrap();
+        let sink = rodio::play(mixer, BufReader::new(file)).unwrap();
+        sink.sleep_until_end();
+    });
 }
-
-impl AudioPlayer {
-    fn open(path: &str) -> anyhow::Result<Self> {
-        let stream_handle = rodio::DeviceSinkBuilder::open_default_sink()?;
-        Ok(Self {
-            player: Player::connect_new(stream_handle.mixer()),
-            file: std::fs::File::open(path)?
-        })
-    }
-    fn play(self) -> anyhow::Result<()> {
-        self.player.append(rodio::Decoder::try_from(self.file)?);
-        self.player.sleep_until_end();
-
-        Ok(())
-    }
-}
-
-pub fn audio_test() -> anyhow::Result<()> {
-
-    let mut au = AudioPlayer::open("sample/ok2.wav")?;
-    //au.play()?;
-    Ok(())
-}
-*/
-
-
-/*
-fn play_sink(path: &str) -> anyhow::Result<()> {
-    let mut handle = rodio::DeviceSinkBuilder::open_default_sink()?;
-    let player = rodio::Player::connect_new(&handle.mixer());
-    let file = std::fs::File::open(path).unwrap();
-    let source = Decoder::try_from(file).unwrap();
-    handle.mixer().add(source);
-    handle.log_on_drop(false);
-
-    //player.sleep_until_end();
-
-    thread::sleep(Duration::from_millis(1500));
-    Ok(())
-}
-*/
-
 
 pub fn register_audio(lua: &Lua, tbl: &Table) -> mlua::Result<()> {
-
-    /*
-    let play_async_fn = lua.create_function(|_, file_path: String| {
-
+    let play_fn = lua.create_function(|_, path: String| {
+        play_async(path);
         Ok(())
     })?;
-    tbl.set("play_async", play_async_fn)?;
-    */
+    tbl.set("play", play_fn)?;
 
     let play_wait_fn = lua.create_function(|_, file_path: String| {
-        let mut stream_handle = rodio::DeviceSinkBuilder::open_default_sink().map_err(mlua::Error::external)?;
+        let mut stream_handle =
+            rodio::DeviceSinkBuilder::open_default_sink().map_err(mlua::Error::external)?;
         stream_handle.log_on_drop(false);
         let player = Player::connect_new(stream_handle.mixer());
         let file = std::fs::File::open(file_path).map_err(mlua::Error::external)?;
@@ -74,7 +31,7 @@ pub fn register_audio(lua: &Lua, tbl: &Table) -> mlua::Result<()> {
         player.sleep_until_end();
         Ok(())
     })?;
-    tbl.set("play", play_wait_fn)?;
+    tbl.set("play_wait", play_wait_fn)?;
 
     Ok(())
 }
