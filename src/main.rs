@@ -3,7 +3,6 @@ mod clipboard;
 mod dialog;
 mod file;
 mod json;
-//mod regex;
 mod terminal;
 mod text;
 
@@ -54,7 +53,6 @@ fn main() -> mlua::Result<()> {
     
     let file = lua.create_table()?;
     let json = lua.create_table()?;
-    //let regex = lua.create_table()?;
     let terminal = lua.create_table()?;
     let clipboard = lua.create_table()?;
     let dialog = lua.create_table()?;
@@ -63,7 +61,6 @@ fn main() -> mlua::Result<()> {
 
     file::register_file(&lua, &file)?;
     json::register_json(&lua, &json)?;
-    //regex::register_regex(&lua, &regex)?;
     text::register_text(&lua, &string_tbl)?;
     terminal::register_terminal(&lua, &terminal)?;
     clipboard::register_clipboard(&lua, &clipboard)?;
@@ -72,7 +69,6 @@ fn main() -> mlua::Result<()> {
 
     lua.globals().set("file", file)?;
     lua.globals().set("json", json)?;
-    //lua.globals().set("regex", regex)?;
     lua.globals().set("terminal", terminal)?;
     lua.globals().set("clipboard", clipboard)?;
     lua.globals().set("dialog", dialog)?;
