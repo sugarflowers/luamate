@@ -13,14 +13,5 @@ pub fn register_text(lua: &Lua, tbl: &Table) -> mlua::Result<()> {
     })?;
     tbl.set("split", split_fn)?;
 
-    let join_fn = lua.create_function(|_, (table, delim): (Table, String)| {
-        let mut items = Vec::new();
-        for value in table.sequence_values::<String>() {
-            items.push(value?);
-        }
-        Ok(items.join(&delim))
-    })?;
-    tbl.set("join", join_fn)?;
-
     Ok(())
 }
