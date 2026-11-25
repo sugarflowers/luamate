@@ -131,8 +131,21 @@ print(b)
 --dprt(terminal)
 --
 --
+
+     t = {}
+     s = "from=world, to=Lua"
+     for k, v in string.gmatch(s, "(%w+)=(%w+)") do
+       t[k] = v
+       print(v)
+     end
+
+
+
+
+
 print("number:")
 v = io.read()
+if v == "" then v = "0" end
 print(tonumber(v))
 --
 --
