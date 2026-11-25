@@ -129,6 +129,26 @@ print(b)
 --
 --
 --dprt(terminal)
+--
+--
+print("number:")
+v = io.read()
+print(tonumber(v))
+--
+--
+--
+dat = "A,B,C,1,2,3"
+spdat = string.split(dat, ",")
+for i,v in ipairs(spdat) do
+  print(i .. ": " .. string.lower(v))
+end
+
+sp2 = table.concat(spdat, "/")
+print(sp2)
+
+local str = "Hello World"
+local sub_str = string.sub(str, 1, 5)
+print(sub_str)  -- 出力: Hello
 
 h = terminal.color("Hello, luamate!", "blue", nil, {"bold","italic","blink"})
 print(h)
@@ -136,7 +156,7 @@ print(h)
 print("play")
 audio.play("c:/work/res/ok2.wav")
 print("playend")
-a = input()
+a = io.read() --input()
 
 audio.play_wait("c:/work/res/ok2.wav")
 --[[
