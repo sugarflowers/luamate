@@ -150,11 +150,14 @@ print(tonumber(v))
 --
 --
 --
+print("split test")
 dat = "A,B,C,1,2,3"
 spdat = string.split(dat, ",")
 for i,v in ipairs(spdat) do
   print(i .. ": " .. string.lower(v))
 end
+print("split test end\n\n")
+
 
 sp2 = table.concat(spdat, "/")
 print(sp2)
