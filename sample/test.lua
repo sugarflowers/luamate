@@ -132,16 +132,6 @@ print(b)
 --
 --
 
-     t = {}
-     s = "from=world, to=Lua"
-     for k, v in string.gmatch(s, "(%w+)=(%w+)") do
-       t[k] = v
-       print(v)
-     end
-
-
-
-
 
 print("number:")
 v = io.read()
