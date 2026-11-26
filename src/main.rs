@@ -4,10 +4,9 @@ mod dialog;
 mod file;
 mod json;
 mod terminal;
-mod text;
 
 use clap::Parser;
-use mlua::{Lua, Variadic, Table};
+use mlua::{Lua, Variadic};
 //use anyhow::Result;
 use colored::{Colorize, control};
 
@@ -47,7 +46,6 @@ fn main() -> mlua::Result<()> {
             .map_err(|_| mlua::Error::external("failed to enable virtual terminal"))?;
     }
 
-
     let print_fn = lua.create_function(|_, args: Variadic<String>| {
         for arg in args {
             println!("{}", arg);
@@ -56,7 +54,6 @@ fn main() -> mlua::Result<()> {
     })?;
     lua.globals().set("print", print_fn)?;
 
-    
     let file = lua.create_table()?;
     let json = lua.create_table()?;
     let terminal = lua.create_table()?;
@@ -79,7 +76,6 @@ fn main() -> mlua::Result<()> {
     lua.globals().set("clipboard", clipboard)?;
     lua.globals().set("dialog", dialog)?;
     lua.globals().set("audio", audio)?;
-
 
     load_builtin(&lua)?;
 

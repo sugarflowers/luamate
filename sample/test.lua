@@ -160,11 +160,11 @@ h = terminal.color("Hello, luamate!", "blue", nil, {"bold","italic","blink"})
 print(h)
 --
 print("play")
-audio.play("c:/work/res/ok2.wav")
+audio.play("sample/ok2.wav")
 print("playend")
 a = io.read() --input()
 
-audio.play_wait("c:/work/res/ok2.wav")
+audio.play_wait("sample/ok2.wav")
 --[[
 a = "  abc "
 print(a)
