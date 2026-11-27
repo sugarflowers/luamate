@@ -1,9 +1,7 @@
 use mlua::{Lua, Table};
 use rodio::Player;
-use std::io::BufReader;
 use std::fs::File;
-
-
+use std::io::BufReader;
 
 fn play_async(file: File) {
     std::thread::spawn(move || {
@@ -15,17 +13,13 @@ fn play_async(file: File) {
     });
 }
 
-
-
 pub fn register_audio(lua: &Lua, tbl: &Table) -> mlua::Result<()> {
-
     let play_fn = lua.create_function(|_, path: String| {
         let file = File::open(&path).map_err(mlua::Error::external)?;
         play_async(file);
         Ok(())
     })?;
     tbl.set("play", play_fn)?;
-
 
     let play_wait_fn = lua.create_function(|_, file_path: String| {
         let mut stream_handle =
@@ -38,7 +32,6 @@ pub fn register_audio(lua: &Lua, tbl: &Table) -> mlua::Result<()> {
         Ok(())
     })?;
     tbl.set("play_wait", play_wait_fn)?;
-
 
     Ok(())
 }
