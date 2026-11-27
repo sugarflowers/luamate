@@ -132,6 +132,18 @@ print(b)
 --
 --
 
+local path = dialog.select_file(
+  "Select a file",
+  {"txt", "csv"}
+)
+
+local text = file.read(path)
+clipboard.set(text)
+
+colored = terminal.color("Copied file contents to clipboard.", "yellow", nil, {"bold"})
+print(colored)
+
+
 
 print("number:")
 v = io.read()
