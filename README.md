@@ -1,44 +1,66 @@
 # LuaMate
-**Your automation mate.**
-LuaMate is a Lua-based automation companion built with Rust.
 
-It is designed to simplify everyday work automation by providing a lightweight scripting environment with powerful built-in capabilities. Instead of creating a new tool for every task, users can automate workflows using small Lua scripts running on a common runtime.
+**Your automation mate.**
+
+LuaMate is a Lua scripting environment built with Rust and mlua to simplify everyday automation tasks.
 
 ## Features
 
-- Lightweight Lua scripting
-- Fast and reliable Rust runtime
+- Lua scripting powered by Rust and mlua
 - Automatic UTF-8 / Shift-JIS text handling
-- Streaming file processing
-- Extensible module architecture
-- Windows-focused workflow automation
+- Practical modules for everyday automation
+- Simple and lightweight runtime
 
 ## Current Capabilities
 
-- Execute Lua scripts
-- Read text files with automatic encoding detection
-- Iterate through files line by line
-- Create and append text files
-- Shift-JIS text output
-- Rust UserData integration
+- Read and write text files with automatic encoding handling
+- Append text files
+- Stream files line by line
+- JSON string ↔ object conversion
+- `string.split()`
+- `string.trim()`
+- Clipboard text get/set
+- Colored terminal output
+- Message dialogs
+- File open dialogs
+- Multiple file selection dialogs
+- File save dialogs
+- Asynchronous audio playback
+- Synchronous audio playback
 
 ## Planned Features
 
-- Directory operations
-- CSV and JSON support
 - Serial communication
-- TCP/IP communication
-- HTTP client support
-- Excel file handling
-- Audio playback
-- External process control
-- Label printer integration
-- Device provisioning workflows
+- Telnet client
+- SSH client
+- CSV processing
+- SQLite support
+- ZIP archive support
+- Desktop automation
+- Mouse and keyboard control
+- Window operations
+- Tepra label printer support
 
 ## Philosophy
 
-LuaMate is not intended to be another RPA platform.
+LuaMate aims to keep automation scripts simple.
 
-The goal is to provide a simple and reliable automation companion that allows users to describe workflows in Lua while delegating low-level operations to Rust.
+Workflows are written in Lua, while platform-specific and low-level functionality is handled by Rust.
 
-A typical LuaMate script should focus on business logic rather than technical implementation details.
+
+
+## Example
+
+```lua
+local path = dialog.select_file(
+  "Select a file",
+  {"txt", "csv"}
+)
+
+local text = file.read(path)
+clipboard.set(text)
+
+colored = terminal.color("Copied file contents to clipboard.", "yellow", nil, {"bold"})
+print(colored)
+```
+
